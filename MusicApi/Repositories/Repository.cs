@@ -17,12 +17,12 @@ namespace MusicApi.Repositories
             _db = db;
         }
 
-        public async Task<IEnumerable<T>> Get()
+        public async Task<IEnumerable<T>> FindAll()
         {
             return await _db.Set<T>().ToListAsync();
         }
 
-        public async Task<T> Get(int id)
+        public async Task<T> Find(int id)
         {
             return await _db.Set<T>().FindAsync(id);
         }
