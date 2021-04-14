@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MusicApi.Data;
 using MusicApi.DTOs;
-using MusicApi.Repositories;
 
 namespace MusicApi.Controllers
 {
@@ -15,11 +15,13 @@ namespace MusicApi.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger _logger;
 
-        public SongsController(IMapper mapper, IUnitOfWork unitOfWork)
+        public SongsController(IMapper mapper, IUnitOfWork unitOfWork, ILogger<SongsController> logger)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -29,9 +31,11 @@ namespace MusicApi.Controllers
             if (songs.Any())
             {
                 var songReadDto = _mapper.Map<IEnumerable<SongReadDto>>(songs);
+                _logger.LogInformation("Entities Found");
                 return Ok(songReadDto);
             }
 
+            _logger.LogWarning("No Entities Found");
             return NotFound();
         }
 
@@ -42,9 +46,11 @@ namespace MusicApi.Controllers
             if (song != null)
             {
                 var songReadDto = _mapper.Map<SongReadDto>(song);
+                _logger.LogInformation("Entity found");
                 return Ok(songReadDto);
             }
 
+            _logger.LogWarning("Wrong entity Id.");
             return NotFound();
         }
     }
