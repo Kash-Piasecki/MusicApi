@@ -10,6 +10,7 @@ namespace MusicApi.Data
         public IGenreRepository Genres { get; set; }
         public IArtistRepository Artists { get; set; }
         public IPlaylistRepository Playlists { get; set; }
+        public ISongPlaylistRepository SongPlaylist { get; set; }
         Task Save();
     }
 }
