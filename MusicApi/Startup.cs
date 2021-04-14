@@ -29,8 +29,8 @@ namespace MusicApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<MusicApiContext>(opt =>
-                opt.UseInMemoryDatabase("MusicApi"));
+            services.AddDbContext<MusicApiContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("MusicApiConnectionString")));
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "MusicApi", Version = "v1"}); });
         }
 
