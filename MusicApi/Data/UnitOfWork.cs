@@ -9,6 +9,7 @@ namespace MusicApi.Data
         public ISongRepository Songs { get; set; }
         public IAlbumRepository Albums { get; set; }
         public IGenreRepository Genres { get; set; }
+        public IArtistRepository Artists { get; set; }
 
         public UnitOfWork(MusicApiContext db)
         {
@@ -16,6 +17,7 @@ namespace MusicApi.Data
             Songs = new SongRepository(_db);
             Albums = new AlbumRepository(_db);
             Genres = new GenreRepository(_db);
+            Artists = new ArtistRepository(_db);
         }
 
 
