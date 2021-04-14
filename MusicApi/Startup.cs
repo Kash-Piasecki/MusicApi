@@ -32,7 +32,7 @@ namespace MusicApi
             services.AddControllers();
             services.AddDbContext<MusicApiContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("MusicApiConnectionString")));
-            services.AddScoped<ISongRepository, SongRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "MusicApi", Version = "v1"}); });
         }
 

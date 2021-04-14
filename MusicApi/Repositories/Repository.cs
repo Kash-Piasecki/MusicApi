@@ -41,10 +41,5 @@ namespace MusicApi.Repositories
         {
             await Task.Run(() => _db.Remove(entity));
         }
-
-        public async Task SaveChanges()
-        {
-            await _db.SaveChangesAsync();
-        }
     }
 }
