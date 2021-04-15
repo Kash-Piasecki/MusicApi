@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -13,12 +12,12 @@ namespace MusicApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ArtistController : ControllerBase
+    public class ArtistsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ArtistController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ArtistsController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

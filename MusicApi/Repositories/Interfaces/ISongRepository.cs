@@ -1,5 +1,4 @@
-﻿using MusicApi.Data;
-using MusicApi.Models;
+﻿using MusicApi.Models;
 
 namespace MusicApi.Repositories
 {

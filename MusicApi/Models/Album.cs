@@ -1,6 +1,4 @@
-﻿
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
 
 namespace MusicApi.Models
 {
@@ -10,7 +8,7 @@ namespace MusicApi.Models
         public string Name { get; set; }
         public int ArtistId { get; set; }
         public Artist Artist { get; set; }
-        
+
         public IEnumerable<Song> Songs { get; set; }
     }
 }

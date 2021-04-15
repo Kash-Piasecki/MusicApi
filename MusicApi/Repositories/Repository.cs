@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MusicApi.Data;
-using MusicApi.Repositories;
 
 namespace MusicApi.Repositories
 {

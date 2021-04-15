@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MusicApi.Models
+﻿namespace MusicApi.Models
 {
     public class SongPlaylist
     {
