@@ -109,5 +109,18 @@ namespace MusicApi.Controllers
             var songReadDto = _mapper.Map<SongReadDto>(song);
             return await Task.Run((() => Ok(songReadDto)));
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var song = await _unitOfWork.Songs.Find(id);
+            if (song == null)
+            {
+                return await Task.Run(NotFound);
+            }
+            await _unitOfWork.Songs.Delete(song);
+            await _unitOfWork.Save();
+            return await Task.Run(NoContent);
+        }
     }
 }
