@@ -37,7 +37,7 @@ namespace MusicApi.Controllers
             }
 
             _logger.LogWarning("No Entities Found");
-            return await Task.Run(() => NotFound());
+            return await Task.Run(NotFound);
         }
 
         [HttpGet("{id}", Name = "Get")]
@@ -52,17 +52,36 @@ namespace MusicApi.Controllers
             }
 
             _logger.LogWarning("Wrong entity Id.");
-            return await Task.Run(() => NotFound());
+            return await Task.Run(NotFound);
         }
 
         [HttpPost]
         public async Task<ActionResult<SongReadDto>> Post(SongCreateDto songCreateDto)
         {
             var song = _mapper.Map<Song>(songCreateDto);
-            _unitOfWork.Songs.Create(song);
+            await _unitOfWork.Songs.Create(song);
             await _unitOfWork.Save();
             var songReadDto = _mapper.Map<SongReadDto>(song);
             return await Task.Run(() => CreatedAtRoute(nameof(Get), new {Id = songReadDto.Id}, songReadDto)) ;
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<SongReadDto>> Update(int id, SongUpdateDto songUpdateDto)
+        {
+            var song = await _unitOfWork.Songs.Find(id);
+
+            if (song == null)
+            {
+                return await Task.Run(NotFound);
+            }
+
+            _mapper.Map(songUpdateDto, song);
+
+            await _unitOfWork.Songs.Update(song);
+            await _unitOfWork.Save();
+
+            var songReadDto = _mapper.Map<SongReadDto>(song);
+            return await Task.Run(() => Ok(songReadDto));
         }
     }
 }
