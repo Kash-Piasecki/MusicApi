@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MusicApi.Data;
@@ -20,6 +22,11 @@ namespace MusicApi.Repositories
             return await _db.Set<T>().ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> FindByCondition(Expression<Func<T, bool>> predicate)
+        {
+            return await _db.Set<T>().Where(predicate).ToListAsync();
+        }
+        
         public async Task<T> Find(int id)
         {
             return await _db.Set<T>().FindAsync(id);

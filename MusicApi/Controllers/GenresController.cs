@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -56,6 +54,21 @@ namespace MusicApi.Controllers
             return await Task.Run(() => CreatedAtAction(nameof(Get), new {Id = genreReadDto.Id}, genreReadDto));
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<GenreReadDto>> Put(int id, GenreUpdateDto genreUpdateDto)
+        {
+            var genre = await _unitOfWork.Genres.Find(id);
+            if (genre == null)
+                return await Task.Run(NotFound);
+            _mapper.Map(genreUpdateDto, genre);
+
+            await _unitOfWork.Genres.Update(genre);
+            await _unitOfWork.Save();
+
+            var genreReadDto = _mapper.Map<GenreReadDto>(genre);
+            return await Task.Run(() => Ok(genreReadDto));
+        }
+
         [HttpPatch("{id}")]
         public async Task<ActionResult<GenreReadDto>> Patch(int id, JsonPatchDocument<GenreUpdateDto> patchDocument)
         {
@@ -81,6 +94,27 @@ namespace MusicApi.Controllers
             await _unitOfWork.Genres.Delete(genre);
             await _unitOfWork.Save();
             return await Task.Run(NoContent);
+        }
+        
+        [HttpGet("{id}/Songs")]
+        public async Task<ActionResult<IEnumerable<Song>>> GetSongs(int id)
+        {
+            var songsByGenreList = await _unitOfWork.Songs.FindByCondition(x => x.GenreId == id);
+            if (!songsByGenreList.Any())
+                return await Task.Run(NotFound);
+            var songsByGenreReadDto = _mapper.Map<IEnumerable<SongReadDto>>(songsByGenreList);
+            return Ok(songsByGenreReadDto);
+        }
+        
+        [HttpGet("{id}/Songs/{songId}")]
+        public async Task<ActionResult<GenreReadDto>> Get(int id, int songId)
+        {
+            var song = await _unitOfWork.Songs.Find(songId);
+            if (song == null) 
+                return await Task.Run(NotFound);
+            var songReadDto = _mapper.Map<SongReadDto>(song);
+            return await Task.Run(() => Ok(songReadDto));
+
         }
         
     }
