@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using MusicApi.Models;
-
-namespace MusicApi.DTOs
+﻿namespace MusicApi.DTOs
 {
     public class SongReadDto
     {
