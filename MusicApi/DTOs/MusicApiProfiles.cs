@@ -8,6 +8,7 @@ namespace MusicApi.DTOs
         public MusicApiProfiles()
         {
             CreateMap<Song, SongReadDto>();
+            CreateMap<SongCreateDto, Song>();
         }
         
     }

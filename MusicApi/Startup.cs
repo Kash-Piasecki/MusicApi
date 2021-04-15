@@ -48,7 +48,7 @@ namespace MusicApi
             }
 
             app.UseHttpsRedirection();
-
+            
             app.UseRouting();
 
             app.UseAuthorization();

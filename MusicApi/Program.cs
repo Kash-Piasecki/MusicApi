@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -9,7 +10,17 @@ namespace MusicApi
     {
         public static void Main(string[] args)
         {
-            ConfigureLogger();
+            //Method 1 inside the code:
+            // ConfigureLogger();
+            
+            //Method 2 inside appsettings.json
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+            
             try
             {
                 CreateHostBuilder(args).Build().Run();
@@ -27,7 +38,11 @@ namespace MusicApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>().UseSerilog(); });
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>()
+                        .UseSerilog();
+                });
 
         public static void ConfigureLogger()
         {
