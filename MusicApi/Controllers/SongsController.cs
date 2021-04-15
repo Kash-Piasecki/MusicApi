@@ -41,7 +41,7 @@ namespace MusicApi.Controllers
             return await Task.Run(NotFound);
         }
 
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<SongReadDto>> Get(int id)
         {
             var song = await _unitOfWork.Songs.Find(id);
@@ -63,7 +63,7 @@ namespace MusicApi.Controllers
             await _unitOfWork.Songs.Create(song);
             await _unitOfWork.Save();
             var songReadDto = _mapper.Map<SongReadDto>(song);
-            return await Task.Run(() => CreatedAtRoute(nameof(Get), new {Id = songReadDto.Id}, songReadDto));
+            return await Task.Run(() => CreatedAtAction(nameof(Get), new {Id = songReadDto.Id}, songReadDto));
         }
 
         [HttpPut("{id}")]
@@ -86,12 +86,12 @@ namespace MusicApi.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult> Patch(int id, JsonPatchDocument<SongUpdateDto> patchDocument)
+        public async Task<ActionResult<SongReadDto>> Patch(int id, JsonPatchDocument<SongUpdateDto> patchDocument)
         {
             var song = await _unitOfWork.Songs.Find(id);
             if (song == null)
             {
-                return NotFound();
+                return await Task.Run(NotFound);
             }
 
             var songToPatch = _mapper.Map<SongUpdateDto>(song);
