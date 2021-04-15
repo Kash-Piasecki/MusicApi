@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MusicApi.Data;
 using MusicApi.Repositories;
+using Newtonsoft.Json.Serialization;
 
 namespace MusicApi
 {
@@ -29,7 +30,9 @@ namespace MusicApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            });
             services.AddDbContext<MusicApiContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("MusicApiConnectionString")));
             services.AddScoped<IUnitOfWork, UnitOfWork>();

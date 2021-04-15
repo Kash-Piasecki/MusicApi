@@ -10,6 +10,7 @@ namespace MusicApi.DTOs
             CreateMap<Song, SongReadDto>();
             CreateMap<SongCreateDto, Song>();
             CreateMap<SongUpdateDto, Song>();
+            CreateMap<Song, SongUpdateDto>();
         }
         
     }

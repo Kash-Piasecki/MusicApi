@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MusicApi.Data;
@@ -62,7 +63,7 @@ namespace MusicApi.Controllers
             await _unitOfWork.Songs.Create(song);
             await _unitOfWork.Save();
             var songReadDto = _mapper.Map<SongReadDto>(song);
-            return await Task.Run(() => CreatedAtRoute(nameof(Get), new {Id = songReadDto.Id}, songReadDto)) ;
+            return await Task.Run(() => CreatedAtRoute(nameof(Get), new {Id = songReadDto.Id}, songReadDto));
         }
 
         [HttpPut("{id}")]
@@ -82,6 +83,31 @@ namespace MusicApi.Controllers
 
             var songReadDto = _mapper.Map<SongReadDto>(song);
             return await Task.Run(() => Ok(songReadDto));
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> Patch(int id, JsonPatchDocument<SongUpdateDto> patchDocument)
+        {
+            var song = await _unitOfWork.Songs.Find(id);
+            if (song == null)
+            {
+                return NotFound();
+            }
+
+            var songToPatch = _mapper.Map<SongUpdateDto>(song);
+            patchDocument.ApplyTo(songToPatch, ModelState);
+            if (!TryValidateModel(songToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            _mapper.Map(songToPatch, song);
+
+            await _unitOfWork.Songs.Update(song);
+            await _unitOfWork.Save();
+
+            var songReadDto = _mapper.Map<SongReadDto>(song);
+            return await Task.Run((() => Ok(songReadDto)));
         }
     }
 }
