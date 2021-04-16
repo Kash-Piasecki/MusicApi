@@ -2,15 +2,18 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MusicApi.Authentication;
 using MusicApi.Data;
 using MusicApi.DTOs;
 using MusicApi.Models;
 
 namespace MusicApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SongsController : ControllerBase
@@ -18,12 +21,14 @@ namespace MusicApi.Controllers
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger _logger;
+        private readonly IJwtAuthenticationManager _authentication;
 
-        public SongsController(IMapper mapper, IUnitOfWork unitOfWork, ILogger<SongsController> logger)
+        public SongsController(IMapper mapper, IUnitOfWork unitOfWork, ILogger<SongsController> logger, IJwtAuthenticationManager authentication)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _authentication = authentication;
         }
 
         [HttpGet]
@@ -122,5 +127,23 @@ namespace MusicApi.Controllers
             await _unitOfWork.Save();
             return await Task.Run(NoContent);
         }
+
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody] UserCred userCred)
+        {
+            var token = _authentication.Authenticate(userCred.Username, userCred.Password);
+            if (token == null)
+            {
+                return Unauthorized();
+            }
+            return Ok(token);
+        }
+    }
+
+    public class UserCred
+    {
+        public string Password { get; set; }
+        public string Username { get; set; }
     }
 }
