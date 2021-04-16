@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MusicApi.Data;
-using MusicApi.Properties.Filter;
+using MusicApi.Pagination;
 
 namespace MusicApi.Repositories
 {
@@ -33,6 +33,11 @@ namespace MusicApi.Repositories
             return await _db.Set<T>().Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
                 .ToListAsync();
+        }
+
+        public async Task<int> Count()
+        {
+            return await _db.Set<T>().CountAsync();
         }
 
         public async Task<T> Find(int id)

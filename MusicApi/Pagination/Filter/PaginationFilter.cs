@@ -1,4 +1,4 @@
-﻿namespace MusicApi.Properties.Filter
+﻿namespace MusicApi.Pagination
 {
     public class PaginationFilter
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MusicApi.Properties.Wrappers
+namespace MusicApi.Pagination
 {
     public class PagedResponse<T> : Response<T>
     {

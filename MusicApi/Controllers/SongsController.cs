@@ -8,8 +8,7 @@ using Microsoft.Extensions.Logging;
 using MusicApi.Data;
 using MusicApi.DTOs;
 using MusicApi.Models;
-using MusicApi.Properties.Filter;
-using MusicApi.Properties.Wrappers;
+using MusicApi.Pagination;
 
 namespace MusicApi.Controllers
 {
@@ -20,24 +19,30 @@ namespace MusicApi.Controllers
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger _logger;
+        private readonly IUriService _uriService;
 
-        public SongsController(IMapper mapper, IUnitOfWork unitOfWork, ILogger<SongsController> logger)
+        public SongsController(IMapper mapper, IUnitOfWork unitOfWork, ILogger<SongsController> logger, IUriService uriService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _uriService = uriService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SongReadDto>>> Get([FromQuery] PaginationFilter filter)
         {
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+            
             var songs = await _unitOfWork.Songs.FindWithPagingFilter(validFilter);
             if (songs.Any())
             {
-                var songReadDto = _mapper.Map<IEnumerable<SongReadDto>>(songs);
                 _logger.LogInformation("Entities Found");
-                return await Task.Run(() => Ok(songReadDto));
+                var songReadDto = _mapper.Map<IEnumerable<SongReadDto>>(songs);
+                var route = Request.Path.Value;
+                var totalRecords = await _unitOfWork.Songs.Count();
+                var pagedResponse = PaginationHelper.CreatePagedReponse<SongReadDto>(songReadDto, validFilter, totalRecords, _uriService, route);
+                return await Task.Run(() => Ok(pagedResponse));
             }
 
             _logger.LogWarning("No Entities Found");

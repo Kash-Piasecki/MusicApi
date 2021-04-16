@@ -1,10 +1,11 @@
-﻿namespace MusicApi.Properties.Wrappers
+﻿namespace MusicApi.Pagination
 {
     public class Response<T>
     {
         public Response()
         {
         }
+        
         public Response(T data)
         {
             Succeeded = true;

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using MusicApi.Models;
-using MusicApi.Properties.Filter;
+using MusicApi.Pagination;
 
 namespace MusicApi.Repositories
 {
