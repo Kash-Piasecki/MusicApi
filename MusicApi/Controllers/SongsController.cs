@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using MusicApi.Data;
 using MusicApi.DTOs;
 using MusicApi.Models;
+using MusicApi.Properties.Filter;
+using MusicApi.Properties.Wrappers;
 
 namespace MusicApi.Controllers
 {
@@ -27,9 +29,10 @@ namespace MusicApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SongReadDto>>> Get()
+        public async Task<ActionResult<IEnumerable<SongReadDto>>> Get([FromQuery] PaginationFilter filter)
         {
-            var songs = await _unitOfWork.Songs.FindAll();
+            var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+            var songs = await _unitOfWork.Songs.FindWithPagingFilter(validFilter);
             if (songs.Any())
             {
                 var songReadDto = _mapper.Map<IEnumerable<SongReadDto>>(songs);
@@ -49,7 +52,8 @@ namespace MusicApi.Controllers
             {
                 var songReadDto = _mapper.Map<SongReadDto>(song);
                 _logger.LogInformation("Entity found");
-                return await Task.Run(() => Ok(songReadDto));
+                
+                return await Task.Run(() => Ok(new Response<SongReadDto>(songReadDto)));
             }
 
             _logger.LogWarning("Wrong entity Id.");
