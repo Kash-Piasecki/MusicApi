@@ -124,7 +124,45 @@ namespace MusicApi.Controllers
 
             return await Task.Run(NotFound);
         }
+        
+        [HttpPost("{id}/Songs/{songId}")]
+        public async Task<ActionResult> PostSongInPlaylist(int id, int songId)
+        {
+            var song = await _unitOfWork.Songs.Find(songId);
+            var playlist = await _unitOfWork.Playlists.Find(id);
+            if (song == null || playlist == null)
+            {
+                return await Task.Run(NotFound);
+            }
 
+            var newSongPlaylist = new SongPlaylist()
+            {
+                PlaylistId = id,
+                SongId = songId
+            };
+            await _unitOfWork.SongPlaylist.Create(newSongPlaylist);
+            await _unitOfWork.Save();
+            return await Task.Run(() => Ok());
+        }
+
+        [HttpDelete("{id}/Songs/{songId}")]
+        public async Task<ActionResult> DeleteSongFromPlaylist(int id, int songId)
+        {
+            var songPlaylistList = await _unitOfWork.SongPlaylist
+                .FindByCondition(x => x.PlaylistId == id && x.SongId == songId);
+            var songPlaylit = songPlaylistList.FirstOrDefault();
+            if (songPlaylit == null)
+            {
+                return await Task.Run(NotFound);
+            }
+
+            await _unitOfWork.SongPlaylist.Delete(songPlaylit);
+            await _unitOfWork.Save();
+            return await Task.Run(Ok);
+        }
+        
+        
+        
         private async Task<IEnumerable<Song>> GetSongsByPlaylist(IEnumerable<SongPlaylist> list, int id)
         {
             var songs = new List<Song>();
@@ -133,5 +171,6 @@ namespace MusicApi.Controllers
 
             return songs;
         }
+        
     }
 }
