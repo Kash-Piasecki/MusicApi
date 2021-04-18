@@ -12,7 +12,7 @@ namespace MusicApi
         {
             //Method 1 inside the code:
             // ConfigureLogger();
-            
+
             //Method 2 inside appsettings.json
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -20,7 +20,7 @@ namespace MusicApi
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
-            
+
             try
             {
                 CreateHostBuilder(args).Build().Run();
@@ -36,13 +36,15 @@ namespace MusicApi
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
                         .UseSerilog();
                 });
+        }
 
         public static void ConfigureLogger()
         {

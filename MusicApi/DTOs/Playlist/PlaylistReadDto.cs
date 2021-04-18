@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using MusicApi.Models;
 
 namespace MusicApi.DTOs
 {

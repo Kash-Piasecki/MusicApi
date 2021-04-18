@@ -11,12 +11,12 @@ namespace MusicApi.Repositories
 {
     public abstract class Repository<T> : IRepository<T> where T : class
     {
-        public MusicApiContext _db { get; set; }
-
         protected Repository(MusicApiContext db)
         {
             _db = db;
         }
+
+        public MusicApiContext _db { get; set; }
 
         public async Task<IEnumerable<T>> FindAll()
         {

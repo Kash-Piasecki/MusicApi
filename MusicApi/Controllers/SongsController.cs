@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -17,12 +16,13 @@ namespace MusicApi.Controllers
     [Route("api/[controller]")]
     public class SongsController : ControllerBase
     {
+        private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
         private readonly IUriService _uriService;
 
-        public SongsController(IMapper mapper, IUnitOfWork unitOfWork, ILogger<SongsController> logger, IUriService uriService)
+        public SongsController(IMapper mapper, IUnitOfWork unitOfWork, ILogger<SongsController> logger,
+            IUriService uriService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -36,15 +36,16 @@ namespace MusicApi.Controllers
         public async Task<ActionResult<IEnumerable<SongReadDto>>> Get([FromQuery] PaginationFilter filter)
         {
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            
+
             var songs = await _unitOfWork.Songs.FindWithPagingFilter(validFilter);
             if (songs.Any())
             {
                 _logger.LogInformation("Entities Found");
-                var songReadDto = _mapper.Map<IEnumerable<DTOs.SongReadDto>>(songs);
+                var songReadDto = _mapper.Map<IEnumerable<SongReadDto>>(songs);
                 var route = Request.Path.Value;
                 var totalRecords = await _unitOfWork.Songs.Count();
-                var pagedResponse = PaginationHelper.CreatePagedReponse<DTOs.SongReadDto>(songReadDto, validFilter, totalRecords, _uriService, route);
+                var pagedResponse =
+                    PaginationHelper.CreatePagedReponse(songReadDto, validFilter, totalRecords, _uriService, route);
                 return await Task.Run(() => Ok(pagedResponse));
             }
 
@@ -55,14 +56,14 @@ namespace MusicApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<DTOs.SongReadDto>> Get(int id)
+        public async Task<ActionResult<SongReadDto>> Get(int id)
         {
             var song = await _unitOfWork.Songs.Find(id);
             if (song != null)
             {
-                var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
+                var songReadDto = _mapper.Map<SongReadDto>(song);
                 _logger.LogInformation("Entity found");
-                return await Task.Run(() => Ok(new Response<DTOs.SongReadDto>(songReadDto)));
+                return await Task.Run(() => Ok(new Response<SongReadDto>(songReadDto)));
             }
 
             _logger.LogWarning("Wrong entity Id.");
@@ -71,20 +72,20 @@ namespace MusicApi.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<DTOs.SongReadDto>> Post(SongCreateDto songCreateDto)
+        public async Task<ActionResult<SongReadDto>> Post(SongCreateDto songCreateDto)
         {
             var song = _mapper.Map<Song>(songCreateDto);
             await _unitOfWork.Songs.Create(song);
             await _unitOfWork.Save();
-            var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
+            var songReadDto = _mapper.Map<SongReadDto>(song);
             _logger.LogInformation("Entity Created");
-            return await Task.Run(() => CreatedAtAction(nameof(Get), new {Id = songReadDto.Id}, songReadDto));
+            return await Task.Run(() => CreatedAtAction(nameof(Get), new {songReadDto.Id}, songReadDto));
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<DTOs.SongReadDto>> Update(int id, SongUpdateDto songUpdateDto)
+        public async Task<ActionResult<SongReadDto>> Update(int id, SongUpdateDto songUpdateDto)
         {
             var song = await _unitOfWork.Songs.Find(id);
 
@@ -99,7 +100,7 @@ namespace MusicApi.Controllers
             await _unitOfWork.Songs.Update(song);
             await _unitOfWork.Save();
 
-            var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
+            var songReadDto = _mapper.Map<SongReadDto>(song);
             _logger.LogInformation("Entity variables changed successfully");
             return await Task.Run(() => Ok(songReadDto));
         }
@@ -107,7 +108,7 @@ namespace MusicApi.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<DTOs.SongReadDto>> Patch(int id, JsonPatchDocument<SongUpdateDto> patchDocument)
+        public async Task<ActionResult<SongReadDto>> Patch(int id, JsonPatchDocument<SongUpdateDto> patchDocument)
         {
             var song = await _unitOfWork.Songs.Find(id);
             if (song == null)
@@ -129,9 +130,9 @@ namespace MusicApi.Controllers
             await _unitOfWork.Songs.Update(song);
             await _unitOfWork.Save();
 
-            var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
+            var songReadDto = _mapper.Map<SongReadDto>(song);
             _logger.LogInformation("Entity parameters changed successfully");
-            return await Task.Run((() => Ok(songReadDto)));
+            return await Task.Run(() => Ok(songReadDto));
         }
 
         [HttpDelete("{id}")]
@@ -145,6 +146,7 @@ namespace MusicApi.Controllers
                 _logger.LogWarning("Entity not found.");
                 return await Task.Run(NotFound);
             }
+
             await _unitOfWork.Songs.Delete(song);
             await _unitOfWork.Save();
             _logger.LogInformation("Deleted successfully.");

@@ -13,15 +13,15 @@ namespace MusicApi.Controllers
     [Route("api/[controller]")]
     public class GenresController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
         public GenresController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Genre>>> Get()
         {
@@ -50,7 +50,7 @@ namespace MusicApi.Controllers
             await _unitOfWork.Save();
 
             var genreReadDto = _mapper.Map<GenreReadDto>(genre);
-            return await Task.Run(() => CreatedAtAction(nameof(Get), new {Id = genreReadDto.Id}, genreReadDto));
+            return await Task.Run(() => CreatedAtAction(nameof(Get), new {genreReadDto.Id}, genreReadDto));
         }
 
         [HttpPut("{id}")]
@@ -79,7 +79,7 @@ namespace MusicApi.Controllers
             if (!TryValidateModel(genreToPatch))
                 return ValidationProblem(ModelState);
             _mapper.Map(genreToPatch, genre);
-            
+
             var genreReadDto = _mapper.Map<GenreReadDto>(genre);
             return await Task.Run(() => Ok(genreReadDto));
         }
@@ -94,27 +94,25 @@ namespace MusicApi.Controllers
             await _unitOfWork.Save();
             return await Task.Run(NoContent);
         }
-        
+
         [HttpGet("{id}/Songs")]
         public async Task<ActionResult<IEnumerable<Song>>> GetSongs(int id)
         {
             var songsByGenreList = await _unitOfWork.Songs.FindByCondition(x => x.GenreId == id);
             if (!songsByGenreList.Any())
                 return await Task.Run(NotFound);
-            var songsByGenreReadDto = _mapper.Map<IEnumerable<DTOs.SongReadDto>>(songsByGenreList);
+            var songsByGenreReadDto = _mapper.Map<IEnumerable<SongReadDto>>(songsByGenreList);
             return Ok(songsByGenreReadDto);
         }
-        
+
         [HttpGet("{id}/Songs/{songId}")]
         public async Task<ActionResult<GenreReadDto>> Get(int id, int songId)
         {
             var song = await _unitOfWork.Songs.Find(songId);
-            if (song == null) 
+            if (song == null)
                 return await Task.Run(NotFound);
-            var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
+            var songReadDto = _mapper.Map<SongReadDto>(song);
             return await Task.Run(() => Ok(songReadDto));
-
         }
-        
     }
 }

@@ -1,8 +1,5 @@
 using System;
-using System.Net;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +14,7 @@ using MusicApi.Pagination;
 using Newtonsoft.Json.Serialization;
 
 [assembly: ApiController]
+
 namespace MusicApi
 {
     public class Startup
@@ -31,7 +29,8 @@ namespace MusicApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson(options => {
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
             services.AddDbContext<MusicApiContext>(options =>
@@ -60,9 +59,9 @@ namespace MusicApi
             }
 
             app.UseMiddleware<ExceptionMiddleware>();
-            
+
             app.UseHttpsRedirection();
-            
+
             app.UseRouting();
 
             app.UseAuthorization();

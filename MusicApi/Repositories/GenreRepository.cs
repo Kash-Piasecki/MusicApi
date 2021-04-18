@@ -3,7 +3,7 @@ using MusicApi.Models;
 
 namespace MusicApi.Repositories
 {
-    class GenreRepository : Repository<Genre>, IGenreRepository
+    internal class GenreRepository : Repository<Genre>, IGenreRepository
     {
         public GenreRepository(MusicApiContext db) : base(db)
         {

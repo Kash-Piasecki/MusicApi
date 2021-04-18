@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.WebUtilities;
-using MusicApi.Pagination;
 
 namespace MusicApi.Pagination
 {
@@ -9,7 +8,7 @@ namespace MusicApi.Pagination
         public Uri GetPageUri(PaginationFilter filter, string route);
     }
 
-    class UriService : IUriService
+    internal class UriService : IUriService
     {
         private readonly string _baseUri;
 
@@ -28,4 +27,3 @@ namespace MusicApi.Pagination
         }
     }
 }
-

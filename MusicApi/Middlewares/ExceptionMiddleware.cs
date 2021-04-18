@@ -7,9 +7,9 @@ namespace MusicApi.Middlewares
 {
     public class ExceptionMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly ILogger _logger;
-        
+        private readonly RequestDelegate _next;
+
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
@@ -25,7 +25,7 @@ namespace MusicApi.Middlewares
             catch (Exception e)
             {
                 _logger.LogError($"Internal server error. Message : {e.Message}");
-                context.Response.StatusCode = 500 ;
+                context.Response.StatusCode = 500;
                 await context.Response.WriteAsync($"Internal server error. It's us, not you. {e.Message}");
             }
         }

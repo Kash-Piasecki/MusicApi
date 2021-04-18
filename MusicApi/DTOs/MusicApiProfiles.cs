@@ -7,11 +7,11 @@ namespace MusicApi.DTOs
     {
         public MusicApiProfiles()
         {
-            CreateMap<Models.Song, SongReadDto>();
-            CreateMap<SongCreateDto, Models.Song>();
-            CreateMap<SongUpdateDto, Models.Song>();
-            CreateMap<Models.Song, SongUpdateDto>();
-            
+            CreateMap<Song, SongReadDto>();
+            CreateMap<SongCreateDto, Song>();
+            CreateMap<SongUpdateDto, Song>();
+            CreateMap<Song, SongUpdateDto>();
+
             CreateMap<Artist, ArtistReadDto>();
             CreateMap<ArtistCreateDto, Artist>();
             CreateMap<ArtistUpdateDto, Artist>();
@@ -21,12 +21,11 @@ namespace MusicApi.DTOs
             CreateMap<GenreCreateDto, Genre>();
             CreateMap<GenreUpdateDto, Genre>();
             CreateMap<Genre, GenreUpdateDto>();
-            
+
             CreateMap<PlayList, PlaylistReadDto>();
             CreateMap<PlaylistCreateDto, PlayList>();
             CreateMap<PlaylistUpdateDto, PlayList>();
             CreateMap<PlayList, PlaylistUpdateDto>();
         }
-        
     }
 }

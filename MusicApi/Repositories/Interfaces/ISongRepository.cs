@@ -1,11 +1,8 @@
-﻿using System.Threading.Tasks;
-using MusicApi.Models;
-using MusicApi.Pagination;
+﻿using MusicApi.Models;
 
 namespace MusicApi.Repositories
 {
     public interface ISongRepository : IRepository<Song>
     {
-
     }
 }

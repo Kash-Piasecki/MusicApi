@@ -7,15 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using MusicApi.Data;
 using MusicApi.DTOs;
 using MusicApi.Models;
-using SongReadDto = MusicApi.DTOs.SongReadDto;
 
 namespace MusicApi.Controllers
 {
     [Route("api/[controller]")]
     public class ArtistsController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ArtistsController(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -57,7 +56,7 @@ namespace MusicApi.Controllers
             await _unitOfWork.Save();
 
             var artistReadDto = _mapper.Map<ArtistReadDto>(artist);
-            return await Task.Run(() => CreatedAtAction(nameof(Get), new {Id = artistReadDto.Id}, artistReadDto));
+            return await Task.Run(() => CreatedAtAction(nameof(Get), new {artistReadDto.Id}, artistReadDto));
         }
 
         [HttpPut("{id}")]
@@ -79,17 +78,17 @@ namespace MusicApi.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult<ArtistReadDto>> Patch(int id, JsonPatchDocument<ArtistUpdateDto> patchDocument)
         {
-            var artist =  await _unitOfWork.Artists.Find(id);
-            if (artist == null) 
+            var artist = await _unitOfWork.Artists.Find(id);
+            if (artist == null)
                 return await Task.Run(NotFound);
-            
+
             var artistToPatch = _mapper.Map<ArtistUpdateDto>(artist);
             patchDocument.ApplyTo(artistToPatch, ModelState);
             if (!TryValidateModel(artistToPatch))
                 return ValidationProblem(ModelState);
 
             _mapper.Map(artistToPatch, artist);
-                    
+
             var artistReadDto = _mapper.Map<ArtistReadDto>(artist);
             return await Task.Run(() => Ok(artistReadDto));
         }
