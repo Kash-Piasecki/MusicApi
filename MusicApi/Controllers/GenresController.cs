@@ -101,7 +101,7 @@ namespace MusicApi.Controllers
             var songsByGenreList = await _unitOfWork.Songs.FindByCondition(x => x.GenreId == id);
             if (!songsByGenreList.Any())
                 return await Task.Run(NotFound);
-            var songsByGenreReadDto = _mapper.Map<IEnumerable<SongReadDto>>(songsByGenreList);
+            var songsByGenreReadDto = _mapper.Map<IEnumerable<DTOs.SongReadDto>>(songsByGenreList);
             return Ok(songsByGenreReadDto);
         }
         
@@ -111,7 +111,7 @@ namespace MusicApi.Controllers
             var song = await _unitOfWork.Songs.Find(songId);
             if (song == null) 
                 return await Task.Run(NotFound);
-            var songReadDto = _mapper.Map<SongReadDto>(song);
+            var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
             return await Task.Run(() => Ok(songReadDto));
 
         }

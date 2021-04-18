@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using MusicApi.Data;
 using MusicApi.DTOs;
 using MusicApi.Models;
+using SongReadDto = MusicApi.DTOs.SongReadDto;
 
 namespace MusicApi.Controllers
 {

@@ -40,6 +40,10 @@ namespace MusicApi.Controllers
             if (playlist == null)
                 return await Task.Run(NotFound);
             var playlistReadDto = _mapper.Map<PlaylistReadDto>(playlist);
+            var songPlaylistList = await _unitOfWork.SongPlaylist.FindByCondition(x => x.PlaylistId == id);
+            var songsInPlaylist = await GetSongsByPlaylist(songPlaylistList, id);
+            var songsInPlaylistDto = _mapper.Map<IEnumerable<SongReadDto>>(songsInPlaylist);
+            playlistReadDto.Songs = songsInPlaylistDto;
             return await Task.Run(() => Ok(playlistReadDto));
         }
 
@@ -105,7 +109,7 @@ namespace MusicApi.Controllers
                 return await Task.Run(NotFound);
             var songsByPlaylistList = await GetSongsByPlaylist(songPlaylistList, id);
 
-            var songsByPlaylistDto = _mapper.Map<IEnumerable<SongReadDto>>(songsByPlaylistList);
+            var songsByPlaylistDto = _mapper.Map<IEnumerable<DTOs.SongReadDto>>(songsByPlaylistList);
             return Ok(songsByPlaylistDto);
         }
 
@@ -118,7 +122,7 @@ namespace MusicApi.Controllers
             {
                 var first = songPlaylist.FirstOrDefault();
                 var song = await _unitOfWork.Songs.Find(first.SongId);
-                var songReadDto = _mapper.Map<SongReadDto>(song);
+                var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
                 return await Task.Run(() => Ok(songReadDto));
             }
 
@@ -160,8 +164,6 @@ namespace MusicApi.Controllers
             await _unitOfWork.Save();
             return await Task.Run(Ok);
         }
-        
-        
         
         private async Task<IEnumerable<Song>> GetSongsByPlaylist(IEnumerable<SongPlaylist> list, int id)
         {

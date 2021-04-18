@@ -32,7 +32,7 @@ namespace MusicApi.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<SongReadDto>>> Get([FromQuery] PaginationFilter filter)
+        public async Task<ActionResult<IEnumerable<DTOs.SongReadDto>>> Get([FromQuery] PaginationFilter filter)
         {
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
             
@@ -40,10 +40,10 @@ namespace MusicApi.Controllers
             if (songs.Any())
             {
                 _logger.LogInformation("Entities Found");
-                var songReadDto = _mapper.Map<IEnumerable<SongReadDto>>(songs);
+                var songReadDto = _mapper.Map<IEnumerable<DTOs.SongReadDto>>(songs);
                 var route = Request.Path.Value;
                 var totalRecords = await _unitOfWork.Songs.Count();
-                var pagedResponse = PaginationHelper.CreatePagedReponse<SongReadDto>(songReadDto, validFilter, totalRecords, _uriService, route);
+                var pagedResponse = PaginationHelper.CreatePagedReponse<DTOs.SongReadDto>(songReadDto, validFilter, totalRecords, _uriService, route);
                 return await Task.Run(() => Ok(pagedResponse));
             }
 
@@ -54,14 +54,14 @@ namespace MusicApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SongReadDto>> Get(int id)
+        public async Task<ActionResult<DTOs.SongReadDto>> Get(int id)
         {
             var song = await _unitOfWork.Songs.Find(id);
             if (song != null)
             {
-                var songReadDto = _mapper.Map<SongReadDto>(song);
+                var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
                 _logger.LogInformation("Entity found");
-                return await Task.Run(() => Ok(new Response<SongReadDto>(songReadDto)));
+                return await Task.Run(() => Ok(new Response<DTOs.SongReadDto>(songReadDto)));
             }
 
             _logger.LogWarning("Wrong entity Id.");
@@ -70,12 +70,12 @@ namespace MusicApi.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<SongReadDto>> Post(SongCreateDto songCreateDto)
+        public async Task<ActionResult<DTOs.SongReadDto>> Post(SongCreateDto songCreateDto)
         {
             var song = _mapper.Map<Song>(songCreateDto);
             await _unitOfWork.Songs.Create(song);
             await _unitOfWork.Save();
-            var songReadDto = _mapper.Map<SongReadDto>(song);
+            var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
             _logger.LogInformation("Entity Created");
             return await Task.Run(() => CreatedAtAction(nameof(Get), new {Id = songReadDto.Id}, songReadDto));
         }
@@ -83,7 +83,7 @@ namespace MusicApi.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SongReadDto>> Update(int id, SongUpdateDto songUpdateDto)
+        public async Task<ActionResult<DTOs.SongReadDto>> Update(int id, SongUpdateDto songUpdateDto)
         {
             var song = await _unitOfWork.Songs.Find(id);
 
@@ -98,7 +98,7 @@ namespace MusicApi.Controllers
             await _unitOfWork.Songs.Update(song);
             await _unitOfWork.Save();
 
-            var songReadDto = _mapper.Map<SongReadDto>(song);
+            var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
             _logger.LogInformation("Entity variables changed successfully");
             return await Task.Run(() => Ok(songReadDto));
         }
@@ -106,7 +106,7 @@ namespace MusicApi.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SongReadDto>> Patch(int id, JsonPatchDocument<SongUpdateDto> patchDocument)
+        public async Task<ActionResult<DTOs.SongReadDto>> Patch(int id, JsonPatchDocument<SongUpdateDto> patchDocument)
         {
             var song = await _unitOfWork.Songs.Find(id);
             if (song == null)
@@ -128,7 +128,7 @@ namespace MusicApi.Controllers
             await _unitOfWork.Songs.Update(song);
             await _unitOfWork.Save();
 
-            var songReadDto = _mapper.Map<SongReadDto>(song);
+            var songReadDto = _mapper.Map<DTOs.SongReadDto>(song);
             _logger.LogInformation("Entity parameters changed successfully");
             return await Task.Run((() => Ok(songReadDto)));
         }

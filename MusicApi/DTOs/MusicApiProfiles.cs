@@ -7,10 +7,10 @@ namespace MusicApi.DTOs
     {
         public MusicApiProfiles()
         {
-            CreateMap<Song, SongReadDto>();
-            CreateMap<SongCreateDto, Song>();
-            CreateMap<SongUpdateDto, Song>();
-            CreateMap<Song, SongUpdateDto>();
+            CreateMap<Models.Song, SongReadDto>();
+            CreateMap<SongCreateDto, Models.Song>();
+            CreateMap<SongUpdateDto, Models.Song>();
+            CreateMap<Models.Song, SongUpdateDto>();
             
             CreateMap<Artist, ArtistReadDto>();
             CreateMap<ArtistCreateDto, Artist>();
