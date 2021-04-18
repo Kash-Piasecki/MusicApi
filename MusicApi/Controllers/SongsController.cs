@@ -61,7 +61,6 @@ namespace MusicApi.Controllers
             {
                 var songReadDto = _mapper.Map<SongReadDto>(song);
                 _logger.LogInformation("Entity found");
-                
                 return await Task.Run(() => Ok(new Response<SongReadDto>(songReadDto)));
             }
 
@@ -71,13 +70,13 @@ namespace MusicApi.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SongReadDto>> Post(SongCreateDto songCreateDto)
         {
             var song = _mapper.Map<Song>(songCreateDto);
             await _unitOfWork.Songs.Create(song);
             await _unitOfWork.Save();
             var songReadDto = _mapper.Map<SongReadDto>(song);
+            _logger.LogInformation("Entity Created");
             return await Task.Run(() => CreatedAtAction(nameof(Get), new {Id = songReadDto.Id}, songReadDto));
         }
 
@@ -90,6 +89,7 @@ namespace MusicApi.Controllers
 
             if (song == null)
             {
+                _logger.LogWarning("Entity not found.");
                 return await Task.Run(NotFound);
             }
 
@@ -99,6 +99,7 @@ namespace MusicApi.Controllers
             await _unitOfWork.Save();
 
             var songReadDto = _mapper.Map<SongReadDto>(song);
+            _logger.LogInformation("Entity variables changed successfully");
             return await Task.Run(() => Ok(songReadDto));
         }
 
@@ -110,6 +111,7 @@ namespace MusicApi.Controllers
             var song = await _unitOfWork.Songs.Find(id);
             if (song == null)
             {
+                _logger.LogWarning("Entity not found.");
                 return await Task.Run(NotFound);
             }
 
@@ -117,6 +119,7 @@ namespace MusicApi.Controllers
             patchDocument.ApplyTo(songToPatch, ModelState);
             if (!TryValidateModel(songToPatch))
             {
+                _logger.LogWarning("Validation model problem.");
                 return ValidationProblem(ModelState);
             }
 
@@ -126,6 +129,7 @@ namespace MusicApi.Controllers
             await _unitOfWork.Save();
 
             var songReadDto = _mapper.Map<SongReadDto>(song);
+            _logger.LogInformation("Entity parameters changed successfully");
             return await Task.Run((() => Ok(songReadDto)));
         }
 
@@ -137,10 +141,12 @@ namespace MusicApi.Controllers
             var song = await _unitOfWork.Songs.Find(id);
             if (song == null)
             {
+                _logger.LogWarning("Entity not found.");
                 return await Task.Run(NotFound);
             }
             await _unitOfWork.Songs.Delete(song);
             await _unitOfWork.Save();
+            _logger.LogInformation("Deleted successfully.");
             return await Task.Run(NoContent);
         }
     }
