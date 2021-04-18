@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MusicApi.Data;
+using MusicApi.Middlewares;
 using MusicApi.Pagination;
 using Newtonsoft.Json.Serialization;
 
@@ -56,21 +57,10 @@ namespace MusicApi
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MusicApi v1"));
-                app.UseExceptionHandler(options =>
-                {
-                    options.Run(
-                        async context =>
-                        {
-                            context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
-                            var ex = context.Features.Get<IExceptionHandlerFeature>();
-                            if (ex != null)
-                            {
-                                await context.Response.WriteAsync(ex.Error.Message);
-                            }
-                        });
-                });
             }
 
+            app.UseMiddleware<ExceptionMiddleware>();
+            
             app.UseHttpsRedirection();
             
             app.UseRouting();
