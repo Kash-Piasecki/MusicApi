@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,6 @@ using MusicApi.Pagination;
 namespace MusicApi.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     public class SongsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -30,6 +30,8 @@ namespace MusicApi.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<SongReadDto>>> Get([FromQuery] PaginationFilter filter)
         {
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
@@ -50,6 +52,8 @@ namespace MusicApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SongReadDto>> Get(int id)
         {
             var song = await _unitOfWork.Songs.Find(id);
@@ -66,6 +70,8 @@ namespace MusicApi.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SongReadDto>> Post(SongCreateDto songCreateDto)
         {
             var song = _mapper.Map<Song>(songCreateDto);
@@ -76,6 +82,8 @@ namespace MusicApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SongReadDto>> Update(int id, SongUpdateDto songUpdateDto)
         {
             var song = await _unitOfWork.Songs.Find(id);
@@ -95,6 +103,8 @@ namespace MusicApi.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SongReadDto>> Patch(int id, JsonPatchDocument<SongUpdateDto> patchDocument)
         {
             var song = await _unitOfWork.Songs.Find(id);
@@ -120,6 +130,8 @@ namespace MusicApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> Delete(int id)
         {
             var song = await _unitOfWork.Songs.Find(id);

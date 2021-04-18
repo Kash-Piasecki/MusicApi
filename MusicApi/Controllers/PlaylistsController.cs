@@ -12,7 +12,6 @@ using MusicApi.Models;
 namespace MusicApi.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     public class PlaylistsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

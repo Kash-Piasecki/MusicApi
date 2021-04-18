@@ -11,7 +11,6 @@ using MusicApi.Models;
 namespace MusicApi.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     public class ArtistsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
